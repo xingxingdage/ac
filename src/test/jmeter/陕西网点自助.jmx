@@ -1,0 +1,1534 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jmeterTestPlan version="1.2" properties="3.2" jmeter="3.3 r1808647">
+  <hashTree>
+    <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="陕西网点自助" enabled="true">
+      <stringProp name="TestPlan.comments"></stringProp>
+      <boolProp name="TestPlan.functional_mode">false</boolProp>
+      <boolProp name="TestPlan.serialize_threadgroups">false</boolProp>
+      <elementProp name="TestPlan.user_defined_variables" elementType="Arguments" guiclass="ArgumentsPanel" testclass="Arguments" testname="用户定义的变量" enabled="true">
+        <collectionProp name="Arguments.arguments"/>
+      </elementProp>
+      <stringProp name="TestPlan.user_define_classpath"></stringProp>
+    </TestPlan>
+    <hashTree>
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="网点自助" enabled="true">
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="循环控制器" enabled="true">
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+          <stringProp name="LoopController.loops">1</stringProp>
+        </elementProp>
+        <stringProp name="ThreadGroup.num_threads">1</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">2</stringProp>
+        <longProp name="ThreadGroup.start_time">1514171106000</longProp>
+        <longProp name="ThreadGroup.end_time">1514171106000</longProp>
+        <boolProp name="ThreadGroup.scheduler">false</boolProp>
+        <stringProp name="ThreadGroup.duration"></stringProp>
+        <stringProp name="ThreadGroup.delay"></stringProp>
+      </ThreadGroup>
+      <hashTree>
+        <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="用户定义的变量" enabled="true">
+          <collectionProp name="Arguments.arguments">
+            <elementProp name="IP" elementType="Argument">
+              <stringProp name="Argument.name">IP</stringProp>
+              <stringProp name="Argument.value">10.10.22.162</stringProp>
+              <stringProp name="Argument.desc">服务器IP</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+            </elementProp>
+            <elementProp name="Port" elementType="Argument">
+              <stringProp name="Argument.name">Port</stringProp>
+              <stringProp name="Argument.value">8085</stringProp>
+              <stringProp name="Argument.desc">服务器端口号</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+            </elementProp>
+          </collectionProp>
+        </Arguments>
+        <hashTree/>
+        <TCPSampler guiclass="TCPSamplerGui" testclass="TCPSampler" testname="5.1.3.1.接入登录" enabled="false">
+          <stringProp name="TCPSampler.server">${IP}</stringProp>
+          <boolProp name="TCPSampler.reUseConnection">true</boolProp>
+          <stringProp name="TCPSampler.port">${Port}</stringProp>
+          <boolProp name="TCPSampler.nodelay">true</boolProp>
+          <stringProp name="TCPSampler.timeout"></stringProp>
+          <stringProp name="TCPSampler.request">${jiaMParam}</stringProp>
+          <boolProp name="TCPSampler.closeConnection">true</boolProp>
+          <stringProp name="ConfigTestElement.username"></stringProp>
+          <stringProp name="ConfigTestElement.password"></stringProp>
+        </TCPSampler>
+        <hashTree>
+          <BeanShellPreProcessor guiclass="TestBeanGUI" testclass="BeanShellPreProcessor" testname="BeanShell PreProcessor" enabled="true">
+            <boolProp name="resetInterpreter">false</boolProp>
+            <stringProp name="parameters"></stringProp>
+            <stringProp name="filename"></stringProp>
+            <stringProp name="script">import com.sinodata.decode.Base64DecodeUtil ;
+
+
+
+String param = &quot;/terminal/login--{\&quot;regId\&quot;:\&quot;2b006a3418428d6522853abc0ffd1c73\&quot;} &quot; ;
+
+
+log.info(&quot;===============================&quot; + param) ;
+
+String jiaMPm =  Base64DecodeUtil.encode(&quot;0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-&quot;,param)  ;
+
+log.info(&quot;======加密后：&quot;+jiaMPm) ;
+
+vars.put(&quot;jiaMParam&quot;,jiaMPm);
+
+//1/terminal/login               000720-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-+U752/ne+a/5j/lt+b/52/la+dv56vna+cr52/ku</stringProp>
+          </BeanShellPreProcessor>
+          <hashTree/>
+          <BeanShellPostProcessor guiclass="TestBeanGUI" testclass="BeanShellPostProcessor" testname="BeanShell PostProcessor" enabled="true">
+            <boolProp name="resetInterpreter">false</boolProp>
+            <stringProp name="parameters"></stringProp>
+            <stringProp name="filename"></stringProp>
+            <stringProp name="script">import com.sinodata.decode.Base64DecodeUtil ;
+
+//获取服务器返回的信息
+String strtemp = prev.getResponseDataAsString() ;
+//打印日志
+log.info(&quot;------解密前：&quot; + strtemp) ;
+
+
+
+String jieMParam ;
+//解密返回信息
+jieMParam = Base64DecodeUtil.decode(strtemp) ;
+log.info(&quot;------解密后：&quot;+jieMParam) ;
+
+
+
+//截取logid的字符串
+String strLogid = strtemp.substring(36,68);
+log.info(&quot;..............................&quot; + strLogid);
+
+vars.put(&quot;logid&quot;,strLogid);
+
+//赋值给变量stringtemp，下面正则表达式调用该变量
+//vars.put(&quot;stringtemp&quot;,jieMParam);</stringProp>
+          </BeanShellPostProcessor>
+          <hashTree/>
+          <RegexExtractor guiclass="RegexExtractorGui" testclass="RegexExtractor" testname="正则表达式提取器" enabled="false">
+            <stringProp name="RegexExtractor.useHeaders">false</stringProp>
+            <stringProp name="RegexExtractor.refname">logid</stringProp>
+            <stringProp name="RegexExtractor.regex">&quot;auId&quot;:&quot;(.+?)&quot;,</stringProp>
+            <stringProp name="RegexExtractor.template">$1$</stringProp>
+            <stringProp name="RegexExtractor.default"></stringProp>
+            <stringProp name="RegexExtractor.match_number"></stringProp>
+            <stringProp name="Sample.scope">variable</stringProp>
+            <stringProp name="Scope.variable">stringtemp</stringProp>
+          </RegexExtractor>
+          <hashTree/>
+          <BeanShellPostProcessor guiclass="TestBeanGUI" testclass="BeanShellPostProcessor" testname="BeanShell PostProcessor" enabled="false">
+            <boolProp name="resetInterpreter">false</boolProp>
+            <stringProp name="parameters"></stringProp>
+            <stringProp name="filename"></stringProp>
+            <stringProp name="script">log.info(&quot;${logid}&quot;);
+
+</stringProp>
+          </BeanShellPostProcessor>
+          <hashTree/>
+        </hashTree>
+        <TCPSampler guiclass="TCPSamplerGui" testclass="TCPSampler" testname="5.1.3.2.取游戏列表" enabled="false">
+          <stringProp name="TCPSampler.server">${IP}</stringProp>
+          <boolProp name="TCPSampler.reUseConnection">true</boolProp>
+          <stringProp name="TCPSampler.port">${Port}</stringProp>
+          <boolProp name="TCPSampler.nodelay">false</boolProp>
+          <stringProp name="TCPSampler.timeout"></stringProp>
+          <stringProp name="TCPSampler.request">${jiaMParam2}</stringProp>
+          <boolProp name="TCPSampler.closeConnection">false</boolProp>
+          <stringProp name="ConfigTestElement.username"></stringProp>
+          <stringProp name="ConfigTestElement.password"></stringProp>
+        </TCPSampler>
+        <hashTree>
+          <BeanShellPreProcessor guiclass="TestBeanGUI" testclass="BeanShellPreProcessor" testname="BeanShell PreProcessor" enabled="true">
+            <boolProp name="resetInterpreter">false</boolProp>
+            <stringProp name="parameters"></stringProp>
+            <stringProp name="filename"></stringProp>
+            <stringProp name="script">import com.sinodata.decode.Base64DecodeUtil ;
+
+
+String param2 = &quot;/terminal/games&quot; ;
+
+log.info(&quot;AAAAAAAAAA&quot; + &quot;${logid}&quot;);
+
+String jiaMPm2 =  Base64DecodeUtil.encode(&quot;CD24A59FF0CC7F69707257E448C0DF1D&quot;,param2)  ;
+
+log.info(&quot;======加密后：&quot;+jiaMPm2) ;
+
+vars.put(&quot;jiaMParam2&quot;,jiaMPm2);</stringProp>
+          </BeanShellPreProcessor>
+          <hashTree/>
+          <BeanShellPostProcessor guiclass="TestBeanGUI" testclass="BeanShellPostProcessor" testname="BeanShell PostProcessor" enabled="true">
+            <boolProp name="resetInterpreter">false</boolProp>
+            <stringProp name="parameters"></stringProp>
+            <stringProp name="filename"></stringProp>
+            <stringProp name="script">import com.sinodata.decode.Base64DecodeUtil ;
+
+
+//获取返回的信息
+String strtemp2 = prev.getResponseDataAsString() ;
+log.info(&quot;------解密前：&quot; + strtemp2) ;
+
+String jieMParam2 ;
+//解密返回信息
+jieMParam2 = Base64DecodeUtil.decode(strtemp2) ;
+log.info(&quot;------解密后：&quot;+jieMParam2) ;
+</stringProp>
+          </BeanShellPostProcessor>
+          <hashTree/>
+        </hashTree>
+        <TCPSampler guiclass="TCPSamplerGui" testclass="TCPSampler" testname="5.1.3.3.取游戏参数" enabled="false">
+          <stringProp name="TCPSampler.server">${IP}</stringProp>
+          <boolProp name="TCPSampler.reUseConnection">true</boolProp>
+          <stringProp name="TCPSampler.port">${Port}</stringProp>
+          <boolProp name="TCPSampler.nodelay">false</boolProp>
+          <stringProp name="TCPSampler.timeout"></stringProp>
+          <stringProp name="TCPSampler.request">${jiaMParam3}</stringProp>
+          <boolProp name="TCPSampler.closeConnection">false</boolProp>
+          <stringProp name="ConfigTestElement.username"></stringProp>
+          <stringProp name="ConfigTestElement.password"></stringProp>
+        </TCPSampler>
+        <hashTree>
+          <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="用户定义的变量" enabled="true">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="playType" elementType="Argument">
+                <stringProp name="Argument.name">playType</stringProp>
+                <stringProp name="Argument.value">S3</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+              <elementProp name="yearMonth" elementType="Argument">
+                <stringProp name="Argument.name">yearMonth</stringProp>
+                <stringProp name="Argument.value">&quot;201702&quot;</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+              <elementProp name="termCode" elementType="Argument">
+                <stringProp name="Argument.name">termCode</stringProp>
+                <stringProp name="Argument.value">&quot;2017002&quot;</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </Arguments>
+          <hashTree/>
+          <BeanShellPreProcessor guiclass="TestBeanGUI" testclass="BeanShellPreProcessor" testname="BeanShell PreProcessor" enabled="true">
+            <boolProp name="resetInterpreter">false</boolProp>
+            <stringProp name="parameters"></stringProp>
+            <stringProp name="filename"></stringProp>
+            <stringProp name="script">import org.json.*;
+import com.sinodata.decode.Base64DecodeUtil ;
+
+
+//组装Json格式
+Map m3 = new HashMap();
+m3.put(&quot;yearMonth&quot;,${yearMonth});
+m3.put(&quot;termCode&quot;,${termCode});
+
+JSONObject ob3 = new JSONObject();
+String jsonstr3 = ob3.valueToString(m3);
+log.info(&quot;33333333333333组装的字符串：&quot; + jsonstr3);
+
+//组装需要加密的字符串
+String param3 = &quot;/${playType}/sell/parameters--&quot; + jsonstr3 ;
+log.info(&quot;--------加密前：&quot; + param3);
+
+
+//加密字符串
+//String jiaMPm4 =  Base64DecodeUtil.encode(&quot;${logid}&quot;,param4)  ;
+String jiaMPm3 =  Base64DecodeUtil.encode(&quot;CD24A59FF0CC7F69707257E448C0DF1D&quot;,param3)  ;
+
+log.info(&quot;--------加密后：&quot; + jiaMPm3);
+
+
+//赋值给jiaMParam6
+vars.put(&quot;jiaMParam3&quot;,jiaMPm3);</stringProp>
+          </BeanShellPreProcessor>
+          <hashTree/>
+          <BeanShellPostProcessor guiclass="TestBeanGUI" testclass="BeanShellPostProcessor" testname="BeanShell PostProcessor" enabled="true">
+            <boolProp name="resetInterpreter">false</boolProp>
+            <stringProp name="parameters"></stringProp>
+            <stringProp name="filename"></stringProp>
+            <stringProp name="script">import com.sinodata.decode.Base64DecodeUtil ;
+
+
+//获取返回的信息
+String strtemp3 = prev.getResponseDataAsString() ;
+log.info(&quot;------解密前：&quot; + strtemp3) ;
+
+String jieMParam3 ;
+//解密返回信息
+jieMParam3 = Base64DecodeUtil.decode(strtemp3) ;
+log.info(&quot;------解密后：&quot;+jieMParam3) ;
+</stringProp>
+          </BeanShellPostProcessor>
+          <hashTree/>
+        </hashTree>
+        <DebugSampler guiclass="TestBeanGUI" testclass="DebugSampler" testname="Debug Sampler" enabled="false">
+          <boolProp name="displayJMeterProperties">false</boolProp>
+          <boolProp name="displayJMeterVariables">true</boolProp>
+          <boolProp name="displaySystemProperties">false</boolProp>
+        </DebugSampler>
+        <hashTree/>
+        <TCPSampler guiclass="TCPSamplerGui" testclass="TCPSampler" testname="5.1.3.4.销售" enabled="true">
+          <stringProp name="TCPSampler.server">${IP}</stringProp>
+          <boolProp name="TCPSampler.reUseConnection">true</boolProp>
+          <stringProp name="TCPSampler.port">${Port}</stringProp>
+          <boolProp name="TCPSampler.nodelay">true</boolProp>
+          <stringProp name="TCPSampler.timeout"></stringProp>
+          <stringProp name="TCPSampler.request">${jiaMParam4}</stringProp>
+          <boolProp name="TCPSampler.closeConnection">true</boolProp>
+          <stringProp name="ConfigTestElement.username"></stringProp>
+          <stringProp name="ConfigTestElement.password"></stringProp>
+        </TCPSampler>
+        <hashTree>
+          <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="用户定义的变量" enabled="true">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="orderId" elementType="Argument">
+                <stringProp name="Argument.name">orderId</stringProp>
+                <stringProp name="Argument.value">${orderId}</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+                <stringProp name="Argument.desc">32位订单编号</stringProp>
+              </elementProp>
+              <elementProp name="termCount" elementType="Argument">
+                <stringProp name="Argument.name">termCount</stringProp>
+                <stringProp name="Argument.value">0</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+                <stringProp name="Argument.desc">0:当前期,大于1多期</stringProp>
+              </elementProp>
+              <elementProp name="sellDatetime" elementType="Argument">
+                <stringProp name="Argument.name">sellDatetime</stringProp>
+                <stringProp name="Argument.value">${sellDatetime}</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+                <stringProp name="Argument.desc">yyyy-MM-dd HH:mm:ss</stringProp>
+              </elementProp>
+              <elementProp name="cardId" elementType="Argument">
+                <stringProp name="Argument.name">cardId</stringProp>
+                <stringProp name="Argument.value">0</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+                <stringProp name="Argument.desc">备注字段</stringProp>
+              </elementProp>
+              <elementProp name="cardType" elementType="Argument">
+                <stringProp name="Argument.name">cardType</stringProp>
+                <stringProp name="Argument.value">0</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+                <stringProp name="Argument.desc">备注字段</stringProp>
+              </elementProp>
+              <elementProp name="moneyId" elementType="Argument">
+                <stringProp name="Argument.name">moneyId</stringProp>
+                <stringProp name="Argument.value">${moneyId}</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+                <stringProp name="Argument.desc">32位资金编号</stringProp>
+              </elementProp>
+            </collectionProp>
+          </Arguments>
+          <hashTree/>
+          <CSVDataSet guiclass="TestBeanGUI" testclass="CSVDataSet" testname="CSV Data Set Config" enabled="true">
+            <stringProp name="delimiter">,</stringProp>
+            <stringProp name="fileEncoding"></stringProp>
+            <stringProp name="filename">F:\jmeter_csv\5.1.3.4.销售-B001.txt</stringProp>
+            <boolProp name="ignoreFirstLine">false</boolProp>
+            <boolProp name="quotedData">false</boolProp>
+            <boolProp name="recycle">true</boolProp>
+            <stringProp name="shareMode">shareMode.all</stringProp>
+            <boolProp name="stopThread">false</boolProp>
+            <stringProp name="variableNames">playType,termCode,validTermCode,betType,betCount,betCodes,money</stringProp>
+          </CSVDataSet>
+          <hashTree/>
+          <BeanShellPreProcessor guiclass="TestBeanGUI" testclass="BeanShellPreProcessor" testname="BeanShell PreProcessor" enabled="true">
+            <boolProp name="resetInterpreter">false</boolProp>
+            <stringProp name="parameters"></stringProp>
+            <stringProp name="filename"></stringProp>
+            <stringProp name="script">import org.json.*;
+import com.sinodata.decode.Base64DecodeUtil ;
+
+//生成32位编号：年月日小时分秒 + 13位时间毫秒 + 随机生成5位数
+String str32 =  &quot;${__time(yyyyMMddHHmmss,)}&quot; + &quot;${__time(,)}&quot; + &quot;${__Random(10000,99999)}&quot;;
+log.info(&quot;随机生成的32位编号：&quot; + str32);
+
+//将生成的32位编号赋值给订单编号和资金编号
+orderId = str32 ;
+moneyId = str32 ;
+log.info(&quot;生成的32位订单编号DDDDDD：&quot; + orderId);
+log.info(&quot;生成的32位资金编号ZZZZZZ：&quot; + moneyId);
+
+//获取系统时间为销售时间
+sellDatetime = &quot;${__time(yyyy-MM-dd HH:mm:ss,)}&quot; ;
+log.info(&quot;XXXXXXXXXXXXXXXXXXXXXXXX&quot; + sellDatetime);
+
+
+//从CSV文件中获取参数值
+termCode=&quot;${termCode}&quot;;
+validTermCode=&quot;${validTermCode}&quot;;
+betType=${betType};
+betCount=${betCount};
+betCodes=&quot;${betCodes}&quot;;
+money=${money};
+
+
+
+//组装json格式
+Map m = new HashMap();
+m.put(&quot;orderId&quot;,orderId);
+//m.put(&quot;termCode&quot;,${termCode});
+m.put(&quot;termCode&quot;,termCode);
+m.put(&quot;termCount&quot;,${termCount});
+
+/*
+m.put(&quot;validTermCode&quot;,${validTermCode});
+m.put(&quot;betType&quot;,${betType});
+m.put(&quot;betCount&quot;,${betCount});
+m.put(&quot;betCodes&quot;,${betCodes});
+m.put(&quot;money&quot;,${money});
+*/
+
+m.put(&quot;validTermCode&quot;,validTermCode);
+m.put(&quot;betType&quot;,betType);
+m.put(&quot;betCount&quot;,betCount);
+m.put(&quot;betCodes&quot;,betCodes);
+m.put(&quot;money&quot;,money);
+
+
+m.put(&quot;sellDatetime&quot;,sellDatetime);
+m.put(&quot;cardId&quot;,${cardId});
+m.put(&quot;cardType&quot;,${cardType});
+m.put(&quot;moneyId&quot;,moneyId);
+
+JSONObject ob = new JSONObject();
+String jsonstr = ob.valueToString(m);
+log.info(&quot;BBBBBBBBBBBBBBBB&quot; + jsonstr);
+
+
+
+//组装需要加密的字符串
+String param4 = &quot;/B001/sell/post--&quot; + jsonstr ;
+log.info(&quot;--------加密前：&quot; + param4);
+
+
+//加密字符串
+//String jiaMPm4 =  Base64DecodeUtil.encode(&quot;${logid}&quot;,param4)  ;
+String jiaMPm4 =  Base64DecodeUtil.encode(&quot;2A75B37F65FFAF03DA01AB7B14441D3A&quot;,param4)  ;
+
+log.info(&quot;======加密后：&quot;+jiaMPm4) ;
+
+vars.put(&quot;jiaMParam4&quot;,jiaMPm4);</stringProp>
+          </BeanShellPreProcessor>
+          <hashTree/>
+          <BeanShellPostProcessor guiclass="TestBeanGUI" testclass="BeanShellPostProcessor" testname="BeanShell PostProcessor" enabled="true">
+            <boolProp name="resetInterpreter">false</boolProp>
+            <stringProp name="parameters"></stringProp>
+            <stringProp name="filename"></stringProp>
+            <stringProp name="script">import com.sinodata.decode.Base64DecodeUtil ;
+
+
+//获取返回的信息
+String strtemp4 = prev.getResponseDataAsString() ;
+log.info(&quot;------解密前：&quot; + strtemp4) ;
+
+String jieMParam4 ;
+//解密返回信息
+jieMParam4 = Base64DecodeUtil.decode(strtemp4) ;
+log.info(&quot;------解密后：&quot;+jieMParam4) ;
+</stringProp>
+          </BeanShellPostProcessor>
+          <hashTree/>
+        </hashTree>
+        <TCPSampler guiclass="TCPSamplerGui" testclass="TCPSampler" testname="5.1.3.5.票状态查询" enabled="false">
+          <stringProp name="TCPSampler.server">${IP}</stringProp>
+          <boolProp name="TCPSampler.reUseConnection">true</boolProp>
+          <stringProp name="TCPSampler.port">${Port}</stringProp>
+          <boolProp name="TCPSampler.nodelay">false</boolProp>
+          <stringProp name="TCPSampler.timeout"></stringProp>
+          <stringProp name="TCPSampler.request">${jiaMParam5}</stringProp>
+          <boolProp name="TCPSampler.closeConnection">false</boolProp>
+          <stringProp name="ConfigTestElement.username"></stringProp>
+          <stringProp name="ConfigTestElement.password"></stringProp>
+        </TCPSampler>
+        <hashTree>
+          <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="用户定义的变量" enabled="true">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="orderId" elementType="Argument">
+                <stringProp name="Argument.name">orderId</stringProp>
+                <stringProp name="Argument.value">&quot;20170216091434148720767404598250&quot;</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+                <stringProp name="Argument.desc">32位订单编号</stringProp>
+              </elementProp>
+              <elementProp name="termCode" elementType="Argument">
+                <stringProp name="Argument.name">termCode</stringProp>
+                <stringProp name="Argument.value">&quot;2017012&quot;</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+                <stringProp name="Argument.desc">销售期号</stringProp>
+              </elementProp>
+              <elementProp name="termCount" elementType="Argument">
+                <stringProp name="Argument.name">termCount</stringProp>
+                <stringProp name="Argument.value">0</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+                <stringProp name="Argument.desc">0:当前期,大于1多期</stringProp>
+              </elementProp>
+              <elementProp name="validTermCode" elementType="Argument">
+                <stringProp name="Argument.name">validTermCode</stringProp>
+                <stringProp name="Argument.value">&quot;2017012&quot;</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+                <stringProp name="Argument.desc">有效期号</stringProp>
+              </elementProp>
+              <elementProp name="betType" elementType="Argument">
+                <stringProp name="Argument.name">betType</stringProp>
+                <stringProp name="Argument.value">0</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+                <stringProp name="Argument.desc">1单式，2复式，3胆拖</stringProp>
+              </elementProp>
+              <elementProp name="betCount" elementType="Argument">
+                <stringProp name="Argument.name">betCount</stringProp>
+                <stringProp name="Argument.value">8</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+                <stringProp name="Argument.desc">注码数量(正整数，注数*倍数)</stringProp>
+              </elementProp>
+              <elementProp name="betCodes" elementType="Argument">
+                <stringProp name="Argument.name">betCodes</stringProp>
+                <stringProp name="Argument.value">&quot;3001020304^&quot;</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+                <stringProp name="Argument.desc">注码</stringProp>
+              </elementProp>
+              <elementProp name="money" elementType="Argument">
+                <stringProp name="Argument.name">money</stringProp>
+                <stringProp name="Argument.value">1600</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+                <stringProp name="Argument.desc">正整数-精确到分</stringProp>
+              </elementProp>
+              <elementProp name="sellDatetime" elementType="Argument">
+                <stringProp name="Argument.name">sellDatetime</stringProp>
+                <stringProp name="Argument.value">&quot;2017-02-16 09-14-42&quot;</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+                <stringProp name="Argument.desc">yyyy-MM-dd HH:mm:ss</stringProp>
+              </elementProp>
+              <elementProp name="cardId" elementType="Argument">
+                <stringProp name="Argument.name">cardId</stringProp>
+                <stringProp name="Argument.value">0</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+                <stringProp name="Argument.desc">备注字段</stringProp>
+              </elementProp>
+              <elementProp name="cardType" elementType="Argument">
+                <stringProp name="Argument.name">cardType</stringProp>
+                <stringProp name="Argument.value">0</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+                <stringProp name="Argument.desc">备注字段</stringProp>
+              </elementProp>
+              <elementProp name="moneyId" elementType="Argument">
+                <stringProp name="Argument.name">moneyId</stringProp>
+                <stringProp name="Argument.value">&quot;20170216091434148720767404598250&quot;</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+                <stringProp name="Argument.desc">32位资金编号</stringProp>
+              </elementProp>
+              <elementProp name="playType" elementType="Argument">
+                <stringProp name="Argument.name">playType</stringProp>
+                <stringProp name="Argument.value">S3</stringProp>
+                <stringProp name="Argument.desc">玩法类型,需要销售的玩法类型</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </Arguments>
+          <hashTree/>
+          <BeanShellPreProcessor guiclass="TestBeanGUI" testclass="BeanShellPreProcessor" testname="BeanShell PreProcessor" enabled="true">
+            <boolProp name="resetInterpreter">false</boolProp>
+            <stringProp name="parameters"></stringProp>
+            <stringProp name="filename"></stringProp>
+            <stringProp name="script">import org.json.*;
+import com.sinodata.decode.Base64DecodeUtil ;
+
+
+//变量取值
+orderId = ${orderId} ;
+termCode = ${termCode} ;
+termCount = ${termCount} ;
+validTermCode = ${validTermCode} ;
+betType = ${betType} ;
+betCount = ${betCount} ;
+betCodes = ${betCodes} ;
+money = ${money} ;
+sellDatetime = ${sellDatetime} ;
+cardId = ${cardId} ;
+cardType = ${cardType} ;
+moneyId = ${moneyId} ;
+
+
+log.info(&quot;订单编号DDDDDD：&quot; + orderId);
+log.info(&quot;资金编号ZZZZZZ：&quot; + moneyId);
+
+
+//组装json格式
+Map m = new HashMap();
+m.put(&quot;orderId&quot;,orderId);
+m.put(&quot;termCode&quot;,${termCode});
+m.put(&quot;termCount&quot;,${termCount});
+m.put(&quot;validTermCode&quot;,${validTermCode});
+m.put(&quot;betType&quot;,${betType});
+m.put(&quot;betCount&quot;,${betCount});
+m.put(&quot;betCodes&quot;,${betCodes});
+m.put(&quot;money&quot;,${money});
+m.put(&quot;sellDatetime&quot;,sellDatetime);
+m.put(&quot;cardId&quot;,${betType});
+m.put(&quot;cardType&quot;,${betType});
+m.put(&quot;moneyId&quot;,moneyId);
+
+JSONObject ob = new JSONObject();
+String jsonstr = ob.valueToString(m);
+log.info(&quot;*******************&quot; + jsonstr);
+
+
+
+//组装需要加密的字符串
+String param5 = &quot;/${playType}/sell/check--&quot; + jsonstr ;
+log.info(&quot;--------加密前：&quot; + param5);
+
+
+//加密字符串
+//String jiaMPm4 =  Base64DecodeUtil.encode(&quot;${logid}&quot;,param4)  ;
+String jiaMPm5 =  Base64DecodeUtil.encode(&quot;2A75B37F65FFAF03DA01AB7B14441D3A&quot;,param5)  ;
+
+log.info(&quot;======加密后：&quot;+jiaMPm5) ;
+
+vars.put(&quot;jiaMParam5&quot;,jiaMPm5);</stringProp>
+          </BeanShellPreProcessor>
+          <hashTree/>
+          <BeanShellPostProcessor guiclass="TestBeanGUI" testclass="BeanShellPostProcessor" testname="BeanShell PostProcessor" enabled="true">
+            <boolProp name="resetInterpreter">false</boolProp>
+            <stringProp name="parameters"></stringProp>
+            <stringProp name="filename"></stringProp>
+            <stringProp name="script">import com.sinodata.decode.Base64DecodeUtil ;
+
+
+//获取返回的信息
+String strtemp5 = prev.getResponseDataAsString() ;
+log.info(&quot;------解密前：&quot; + strtemp5) ;
+
+String jieMParam5 ;
+//解密返回信息
+jieMParam5 = Base64DecodeUtil.decode(strtemp5) ;
+log.info(&quot;------解密后：&quot;+jieMParam5) ;
+</stringProp>
+          </BeanShellPostProcessor>
+          <hashTree/>
+        </hashTree>
+        <TCPSampler guiclass="TCPSamplerGui" testclass="TCPSampler" testname="5.1.3.6.中奖数据查询" enabled="false">
+          <stringProp name="TCPSampler.server">${IP}</stringProp>
+          <boolProp name="TCPSampler.reUseConnection">true</boolProp>
+          <stringProp name="TCPSampler.port">${Port}</stringProp>
+          <boolProp name="TCPSampler.nodelay">false</boolProp>
+          <stringProp name="TCPSampler.timeout"></stringProp>
+          <stringProp name="TCPSampler.request">${jiaMParam6}</stringProp>
+          <boolProp name="TCPSampler.closeConnection">false</boolProp>
+          <stringProp name="ConfigTestElement.username"></stringProp>
+          <stringProp name="ConfigTestElement.password"></stringProp>
+        </TCPSampler>
+        <hashTree>
+          <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="用户定义的变量" enabled="true">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="playType" elementType="Argument">
+                <stringProp name="Argument.name">playType</stringProp>
+                <stringProp name="Argument.value">QL730</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+              <elementProp name="yearMonth" elementType="Argument">
+                <stringProp name="Argument.name">yearMonth</stringProp>
+                <stringProp name="Argument.value">201702</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+              <elementProp name="termCode" elementType="Argument">
+                <stringProp name="Argument.name">termCode</stringProp>
+                <stringProp name="Argument.value">&quot;2017016&quot;</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+              <elementProp name="ticketCode" elementType="Argument">
+                <stringProp name="Argument.name">ticketCode</stringProp>
+                <stringProp name="Argument.value">&quot;531f9b7e639ced09e015&quot;</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </Arguments>
+          <hashTree/>
+          <BeanShellPreProcessor guiclass="TestBeanGUI" testclass="BeanShellPreProcessor" testname="BeanShell PreProcessor" enabled="true">
+            <boolProp name="resetInterpreter">false</boolProp>
+            <stringProp name="parameters"></stringProp>
+            <stringProp name="filename"></stringProp>
+            <stringProp name="script">import org.json.*;
+import com.sinodata.decode.Base64DecodeUtil ;
+
+
+//组装Json格式
+Map m6 = new HashMap();
+m6.put(&quot;yearMonth&quot;,${yearMonth});
+m6.put(&quot;termCode&quot;,${termCode});
+m6.put(&quot;ticketCode&quot;,${ticketCode});
+
+JSONObject ob6 = new JSONObject();
+String jsonstr6 = ob6.valueToString(m6);
+log.info(&quot;666666666666666组装的字符串：&quot; + jsonstr6);
+
+//组装需要加密的字符串
+String param6 = &quot;/${playType}/query/wininfo--&quot; + jsonstr6 ;
+log.info(&quot;--------加密前：&quot; + param6);
+
+
+//加密字符串
+//String jiaMPm4 =  Base64DecodeUtil.encode(&quot;${logid}&quot;,param4)  ;
+String jiaMPm6 =  Base64DecodeUtil.encode(&quot;CD24A59FF0CC7F69707257E448C0DF1D&quot;,param6)  ;
+
+log.info(&quot;--------加密后：&quot; + jiaMPm6);
+
+
+//赋值给jiaMParam6
+vars.put(&quot;jiaMParam6&quot;,jiaMPm6);</stringProp>
+          </BeanShellPreProcessor>
+          <hashTree/>
+          <BeanShellPostProcessor guiclass="TestBeanGUI" testclass="BeanShellPostProcessor" testname="BeanShell PostProcessor" enabled="true">
+            <boolProp name="resetInterpreter">false</boolProp>
+            <stringProp name="parameters"></stringProp>
+            <stringProp name="filename"></stringProp>
+            <stringProp name="script">import com.sinodata.decode.Base64DecodeUtil ;
+
+
+//获取返回的信息
+String strtemp6 = prev.getResponseDataAsString() ;
+log.info(&quot;------解密前：&quot; + strtemp6) ;
+
+
+//解密返回信息
+String jieMParam6 = Base64DecodeUtil.decode(strtemp6) ;
+log.info(&quot;------解密后：&quot;+jieMParam6) ;
+</stringProp>
+          </BeanShellPostProcessor>
+          <hashTree/>
+        </hashTree>
+        <TCPSampler guiclass="TCPSamplerGui" testclass="TCPSampler" testname="5.1.3.7.取开奖公告" enabled="false">
+          <stringProp name="TCPSampler.server">${IP}</stringProp>
+          <boolProp name="TCPSampler.reUseConnection">true</boolProp>
+          <stringProp name="TCPSampler.port">${Port}</stringProp>
+          <boolProp name="TCPSampler.nodelay">false</boolProp>
+          <stringProp name="TCPSampler.timeout"></stringProp>
+          <stringProp name="TCPSampler.request">${jiaMParam7}</stringProp>
+          <boolProp name="TCPSampler.closeConnection">false</boolProp>
+          <stringProp name="ConfigTestElement.username"></stringProp>
+          <stringProp name="ConfigTestElement.password"></stringProp>
+        </TCPSampler>
+        <hashTree>
+          <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="用户定义的变量" enabled="true">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="playType" elementType="Argument">
+                <stringProp name="Argument.name">playType</stringProp>
+                <stringProp name="Argument.value">K3</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+              <elementProp name="yearMonth" elementType="Argument">
+                <stringProp name="Argument.name">yearMonth</stringProp>
+                <stringProp name="Argument.value">&quot;201702&quot;</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+              <elementProp name="termCode" elementType="Argument">
+                <stringProp name="Argument.name">termCode</stringProp>
+                <stringProp name="Argument.value">&quot;0210040&quot;</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </Arguments>
+          <hashTree/>
+          <BeanShellPreProcessor guiclass="TestBeanGUI" testclass="BeanShellPreProcessor" testname="BeanShell PreProcessor" enabled="true">
+            <boolProp name="resetInterpreter">false</boolProp>
+            <stringProp name="parameters"></stringProp>
+            <stringProp name="filename"></stringProp>
+            <stringProp name="script">import org.json.*;
+import com.sinodata.decode.Base64DecodeUtil ;
+
+
+//组装Json格式
+Map m7 = new HashMap();
+m7.put(&quot;yearMonth&quot;,${yearMonth});
+m7.put(&quot;termCode&quot;,${termCode});
+
+JSONObject ob7 = new JSONObject();
+String jsonstr7 = ob7.valueToString(m7);
+log.info(&quot;777777777777777组装的字符串：&quot; + jsonstr7);
+
+//组装需要加密的字符串
+String param7 = &quot;/${playType}/query/bulletins--&quot; + jsonstr7 ;
+log.info(&quot;--------加密前：&quot; + param7);
+
+
+//加密字符串
+//String jiaMPm4 =  Base64DecodeUtil.encode(&quot;${logid}&quot;,param4)  ;
+String jiaMPm7 =  Base64DecodeUtil.encode(&quot;2A75B37F65FFAF03DA01AB7B14441D3A&quot;,param7)  ;
+
+log.info(&quot;--------加密后：&quot; + jiaMPm7);
+
+
+//赋值给jiaMParam6
+vars.put(&quot;jiaMParam7&quot;,jiaMPm7);</stringProp>
+          </BeanShellPreProcessor>
+          <hashTree/>
+          <BeanShellPostProcessor guiclass="TestBeanGUI" testclass="BeanShellPostProcessor" testname="BeanShell PostProcessor" enabled="true">
+            <boolProp name="resetInterpreter">false</boolProp>
+            <stringProp name="parameters"></stringProp>
+            <stringProp name="filename"></stringProp>
+            <stringProp name="script">import com.sinodata.decode.Base64DecodeUtil ;
+
+
+//获取返回的信息
+String strtemp6 = prev.getResponseDataAsString() ;
+log.info(&quot;------解密前：&quot; + strtemp6) ;
+
+
+//解密返回信息
+String jieMParam6 = Base64DecodeUtil.decode(strtemp6) ;
+log.info(&quot;------解密后：&quot;+jieMParam6) ;
+</stringProp>
+          </BeanShellPostProcessor>
+          <hashTree/>
+        </hashTree>
+        <TCPSampler guiclass="TCPSamplerGui" testclass="TCPSampler" testname="5.1.3.8.取历史期号列表" enabled="false">
+          <stringProp name="TCPSampler.server">${IP}</stringProp>
+          <boolProp name="TCPSampler.reUseConnection">true</boolProp>
+          <stringProp name="TCPSampler.port">${Port}</stringProp>
+          <boolProp name="TCPSampler.nodelay">false</boolProp>
+          <stringProp name="TCPSampler.timeout"></stringProp>
+          <stringProp name="TCPSampler.request">${jiaMParam8}</stringProp>
+          <boolProp name="TCPSampler.closeConnection">false</boolProp>
+          <stringProp name="ConfigTestElement.username"></stringProp>
+          <stringProp name="ConfigTestElement.password"></stringProp>
+        </TCPSampler>
+        <hashTree>
+          <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="用户定义的变量" enabled="true">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="playType" elementType="Argument">
+                <stringProp name="Argument.name">playType</stringProp>
+                <stringProp name="Argument.value">B001</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+              <elementProp name="pageSize" elementType="Argument">
+                <stringProp name="Argument.name">pageSize</stringProp>
+                <stringProp name="Argument.value">0</stringProp>
+                <stringProp name="Argument.desc">每页大小（整数，大于0小于20）</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+              <elementProp name="currentPage" elementType="Argument">
+                <stringProp name="Argument.name">currentPage</stringProp>
+                <stringProp name="Argument.value">0</stringProp>
+                <stringProp name="Argument.desc">当前页（整数，大于0，即查询第几页数据）</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </Arguments>
+          <hashTree/>
+          <BeanShellPreProcessor guiclass="TestBeanGUI" testclass="BeanShellPreProcessor" testname="BeanShell PreProcessor" enabled="true">
+            <boolProp name="resetInterpreter">false</boolProp>
+            <stringProp name="parameters"></stringProp>
+            <stringProp name="filename"></stringProp>
+            <stringProp name="script">import org.json.*;
+import com.sinodata.decode.Base64DecodeUtil ;
+
+
+//组装Json格式
+Map m8 = new HashMap();
+m8.put(&quot;pageSize&quot;,${pageSize});
+m8.put(&quot;currentPage&quot;,${currentPage});
+
+JSONObject ob8 = new JSONObject();
+String jsonstr8 = ob8.valueToString(m8);
+log.info(&quot;88888888组装的字符串：&quot; + jsonstr8);
+
+//组装需要加密的字符串
+String param8 = &quot;/${playType}/query/recentTermCodes--&quot; + jsonstr8 ;
+log.info(&quot;--------加密前：&quot; + param8);
+
+
+//加密字符串
+//String jiaMPm4 =  Base64DecodeUtil.encode(&quot;${logid}&quot;,param4)  ;
+String jiaMPm8 =  Base64DecodeUtil.encode(&quot;D70DF5BC525ADE82CD32AC9172C7C514&quot;,param8)  ;
+
+log.info(&quot;--------加密后：&quot; + jiaMPm8);
+
+
+//赋值给jiaMParam6
+vars.put(&quot;jiaMParam8&quot;,jiaMPm8);</stringProp>
+          </BeanShellPreProcessor>
+          <hashTree/>
+          <BeanShellPostProcessor guiclass="TestBeanGUI" testclass="BeanShellPostProcessor" testname="BeanShell PostProcessor" enabled="true">
+            <boolProp name="resetInterpreter">false</boolProp>
+            <stringProp name="parameters"></stringProp>
+            <stringProp name="filename"></stringProp>
+            <stringProp name="script">import com.sinodata.decode.Base64DecodeUtil ;
+
+
+//获取返回的信息
+String strtemp8 = prev.getResponseDataAsString() ;
+log.info(&quot;------解密前：&quot; + strtemp8) ;
+
+
+//解密返回信息
+String jieMParam8 = Base64DecodeUtil.decode(strtemp8) ;
+log.info(&quot;------解密后：&quot;+jieMParam8) ;
+</stringProp>
+          </BeanShellPostProcessor>
+          <hashTree/>
+        </hashTree>
+        <TCPSampler guiclass="TCPSamplerGui" testclass="TCPSampler" testname="5.1.3.10.兑奖" enabled="false">
+          <stringProp name="TCPSampler.server">${IP}</stringProp>
+          <boolProp name="TCPSampler.reUseConnection">true</boolProp>
+          <stringProp name="TCPSampler.port">${Port}</stringProp>
+          <boolProp name="TCPSampler.nodelay">false</boolProp>
+          <stringProp name="TCPSampler.timeout"></stringProp>
+          <stringProp name="TCPSampler.request">${jiaMParam10}</stringProp>
+          <boolProp name="TCPSampler.closeConnection">false</boolProp>
+          <stringProp name="ConfigTestElement.username"></stringProp>
+          <stringProp name="ConfigTestElement.password"></stringProp>
+        </TCPSampler>
+        <hashTree>
+          <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="用户定义的变量" enabled="true">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="playType" elementType="Argument">
+                <stringProp name="Argument.name">playType</stringProp>
+                <stringProp name="Argument.value">B001</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+              <elementProp name="encashId" elementType="Argument">
+                <stringProp name="Argument.name">encashId</stringProp>
+                <stringProp name="Argument.value">${encashId}</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+              <elementProp name="yearMonth" elementType="Argument">
+                <stringProp name="Argument.name">yearMonth</stringProp>
+                <stringProp name="Argument.value">&quot;201702&quot;</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+              <elementProp name="termCode" elementType="Argument">
+                <stringProp name="Argument.name">termCode</stringProp>
+                <stringProp name="Argument.value">&quot;2017017&quot;</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+              <elementProp name="ticketCode" elementType="Argument">
+                <stringProp name="Argument.name">ticketCode</stringProp>
+                <stringProp name="Argument.value">28d243741f3c30027ad5</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </Arguments>
+          <hashTree/>
+          <BeanShellPreProcessor guiclass="TestBeanGUI" testclass="BeanShellPreProcessor" testname="BeanShell PreProcessor" enabled="true">
+            <boolProp name="resetInterpreter">false</boolProp>
+            <stringProp name="parameters"></stringProp>
+            <stringProp name="filename"></stringProp>
+            <stringProp name="script">import org.json.*;
+import com.sinodata.decode.Base64DecodeUtil ;
+
+String strenID =  &quot;${__time(yyyyMMddHHmmss,)}&quot; + &quot;${playType}&quot; + ${termCode} +&quot;${__Random(10000,99999)}&quot;;
+log.info(&quot;随机生成的encashID：&quot; + strenID);
+
+encashId10=strenID;
+
+//组装Json格式
+Map m10 = new HashMap();
+m10.put(&quot;encashId&quot;,encashId10);
+m10.put(&quot;yearMonth&quot;,${yearMonth});
+m10.put(&quot;termCode&quot;,${termCode});
+m10.put(&quot;ticketCode&quot;,&quot;${ticketCode}&quot;);
+
+JSONObject ob10 = new JSONObject();
+String jsonstr10 = ob10.valueToString(m10);
+log.info(&quot;1010101010101010组装的字符串：&quot; + jsonstr10);
+
+//组装需要加密的字符串
+String param10 = &quot;/${playType}/encash/prize--&quot; + jsonstr10 ;
+log.info(&quot;--------加密前：&quot; + param10);
+
+
+//加密字符串
+//String jiaMPm4 =  Base64DecodeUtil.encode(&quot;${logid}&quot;,param4)  ;
+String jiaMPm10 =  Base64DecodeUtil.encode(&quot;2A75B37F65FFAF03DA01AB7B14441D3A&quot;,param10)  ;
+
+log.info(&quot;--------加密后：&quot; + jiaMPm10);
+
+
+//赋值给jiaMParam6
+vars.put(&quot;jiaMParam10&quot;,jiaMPm10);</stringProp>
+          </BeanShellPreProcessor>
+          <hashTree/>
+          <BeanShellPostProcessor guiclass="TestBeanGUI" testclass="BeanShellPostProcessor" testname="BeanShell PostProcessor" enabled="true">
+            <boolProp name="resetInterpreter">false</boolProp>
+            <stringProp name="parameters"></stringProp>
+            <stringProp name="filename"></stringProp>
+            <stringProp name="script">import com.sinodata.decode.Base64DecodeUtil ;
+
+
+//获取返回的信息
+String strtemp10 = prev.getResponseDataAsString() ;
+log.info(&quot;------解密前：&quot; + strtemp10) ;
+
+
+//解密返回信息
+String jieMParam10 = Base64DecodeUtil.decode(strtemp10) ;
+log.info(&quot;------解密后：&quot;+jieMParam10) ;
+</stringProp>
+          </BeanShellPostProcessor>
+          <hashTree/>
+        </hashTree>
+        <TCPSampler guiclass="TCPSamplerGui" testclass="TCPSampler" testname="5.1.3.13.中奖文件查询" enabled="false">
+          <stringProp name="TCPSampler.server">${IP}</stringProp>
+          <boolProp name="TCPSampler.reUseConnection">true</boolProp>
+          <stringProp name="TCPSampler.port">${Port}</stringProp>
+          <boolProp name="TCPSampler.nodelay">false</boolProp>
+          <stringProp name="TCPSampler.timeout"></stringProp>
+          <stringProp name="TCPSampler.request">${jiaMParam13}</stringProp>
+          <boolProp name="TCPSampler.closeConnection">false</boolProp>
+          <stringProp name="ConfigTestElement.username"></stringProp>
+          <stringProp name="ConfigTestElement.password"></stringProp>
+        </TCPSampler>
+        <hashTree>
+          <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="用户定义的变量" enabled="true">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="playId" elementType="Argument">
+                <stringProp name="Argument.name">playId</stringProp>
+                <stringProp name="Argument.value">s3</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+                <stringProp name="Argument.desc">玩法id(整数)</stringProp>
+              </elementProp>
+              <elementProp name="yearMonth" elementType="Argument">
+                <stringProp name="Argument.name">yearMonth</stringProp>
+                <stringProp name="Argument.value">201702</stringProp>
+                <stringProp name="Argument.desc">）</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+              <elementProp name="termCode" elementType="Argument">
+                <stringProp name="Argument.name">termCode</stringProp>
+                <stringProp name="Argument.value">2017008</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </Arguments>
+          <hashTree/>
+          <BeanShellPreProcessor guiclass="TestBeanGUI" testclass="BeanShellPreProcessor" testname="BeanShell PreProcessor" enabled="true">
+            <boolProp name="resetInterpreter">false</boolProp>
+            <stringProp name="parameters"></stringProp>
+            <stringProp name="filename"></stringProp>
+            <stringProp name="script">import org.json.*;
+import com.sinodata.decode.Base64DecodeUtil ;
+
+
+//组装Json格式
+Map m13 = new HashMap();
+m13.put(&quot;playId&quot;,${playId});
+m13.put(&quot;yearMonth&quot;,${yearMonth});
+m13.put(&quot;termCode&quot;,${termCode});
+
+
+JSONObject ob13 = new JSONObject();
+String jsonstr13 = ob13.valueToString(m13);
+log.info(&quot;1313131313131313组装的字符串：&quot; + jsonstr13);
+
+//组装需要加密的字符串
+String param13 = &quot;/query/winfile--&quot; + jsonstr13 ;
+log.info(&quot;--------加密前：&quot; + param13);
+
+
+//加密字符串
+//String jiaMPm4 =  Base64DecodeUtil.encode(&quot;${logid}&quot;,param4)  ;
+String jiaMPm13 =  Base64DecodeUtil.encode(&quot;2A75B37F65FFAF03DA01AB7B14441D3A&quot;,param13)  ;
+
+log.info(&quot;--------加密后：&quot; + jiaMPm13);
+
+
+//赋值给jiaMParam6
+vars.put(&quot;jiaMParam13&quot;,jiaMPm13);</stringProp>
+          </BeanShellPreProcessor>
+          <hashTree/>
+          <BeanShellPostProcessor guiclass="TestBeanGUI" testclass="BeanShellPostProcessor" testname="BeanShell PostProcessor" enabled="true">
+            <boolProp name="resetInterpreter">false</boolProp>
+            <stringProp name="parameters"></stringProp>
+            <stringProp name="filename"></stringProp>
+            <stringProp name="script">import com.sinodata.decode.Base64DecodeUtil ;
+
+
+//获取返回的信息
+String strtemp13 = prev.getResponseDataAsString() ;
+log.info(&quot;------解密前：&quot; + strtemp13) ;
+
+
+//解密返回信息
+String jieMParam13 = Base64DecodeUtil.decode(strtemp13) ;
+log.info(&quot;------解密后：&quot;+jieMParam13) ;
+</stringProp>
+          </BeanShellPostProcessor>
+          <hashTree/>
+        </hashTree>
+        <TCPSampler guiclass="TCPSamplerGui" testclass="TCPSampler" testname="5.1.3.15.余额查询" enabled="false">
+          <stringProp name="TCPSampler.server">${IP}</stringProp>
+          <boolProp name="TCPSampler.reUseConnection">true</boolProp>
+          <stringProp name="TCPSampler.port">${Port}</stringProp>
+          <boolProp name="TCPSampler.nodelay">false</boolProp>
+          <stringProp name="TCPSampler.timeout"></stringProp>
+          <stringProp name="TCPSampler.request">${jiaMParam15}</stringProp>
+          <boolProp name="TCPSampler.closeConnection">false</boolProp>
+          <stringProp name="ConfigTestElement.username"></stringProp>
+          <stringProp name="ConfigTestElement.password"></stringProp>
+        </TCPSampler>
+        <hashTree>
+          <BeanShellPreProcessor guiclass="TestBeanGUI" testclass="BeanShellPreProcessor" testname="BeanShell PreProcessor" enabled="true">
+            <boolProp name="resetInterpreter">false</boolProp>
+            <stringProp name="parameters"></stringProp>
+            <stringProp name="filename"></stringProp>
+            <stringProp name="script">import org.json.*;
+import com.sinodata.decode.Base64DecodeUtil ;
+
+
+String param15 = &quot;/query/balance--{}&quot; ;
+
+log.info(&quot;AAAAAAAAAA&quot; + param15);
+
+String jiaMPm15 =  Base64DecodeUtil.encode(&quot;CD24A59FF0CC7F69707257E448C0DF1D&quot;,param15)  ;
+
+log.info(&quot;======加密后：&quot;+jiaMPm15) ;
+
+vars.put(&quot;jiaMParam15&quot;,jiaMPm15);</stringProp>
+          </BeanShellPreProcessor>
+          <hashTree/>
+          <BeanShellPostProcessor guiclass="TestBeanGUI" testclass="BeanShellPostProcessor" testname="BeanShell PostProcessor" enabled="true">
+            <boolProp name="resetInterpreter">false</boolProp>
+            <stringProp name="parameters"></stringProp>
+            <stringProp name="filename"></stringProp>
+            <stringProp name="script">import com.sinodata.decode.Base64DecodeUtil ;
+
+
+//获取返回的信息
+String strtemp15 = prev.getResponseDataAsString() ;
+log.info(&quot;------解密前：&quot; + strtemp15) ;
+
+
+//解密返回信息
+String jieMParam15 = Base64DecodeUtil.decode(strtemp15) ;
+log.info(&quot;------解密后：&quot;+jieMParam15) ;
+</stringProp>
+          </BeanShellPostProcessor>
+          <hashTree/>
+        </hashTree>
+        <TCPSampler guiclass="TCPSamplerGui" testclass="TCPSampler" testname="5.1.3.16.时间查询" enabled="false">
+          <stringProp name="TCPSampler.server">${IP}</stringProp>
+          <boolProp name="TCPSampler.reUseConnection">true</boolProp>
+          <stringProp name="TCPSampler.port">${Port}</stringProp>
+          <boolProp name="TCPSampler.nodelay">false</boolProp>
+          <stringProp name="TCPSampler.timeout"></stringProp>
+          <stringProp name="TCPSampler.request">${jiaMParam16}</stringProp>
+          <boolProp name="TCPSampler.closeConnection">false</boolProp>
+          <stringProp name="ConfigTestElement.username"></stringProp>
+          <stringProp name="ConfigTestElement.password"></stringProp>
+        </TCPSampler>
+        <hashTree>
+          <BeanShellPreProcessor guiclass="TestBeanGUI" testclass="BeanShellPreProcessor" testname="BeanShell PreProcessor" enabled="true">
+            <boolProp name="resetInterpreter">false</boolProp>
+            <stringProp name="parameters"></stringProp>
+            <stringProp name="filename"></stringProp>
+            <stringProp name="script">import org.json.*;
+import com.sinodata.decode.Base64DecodeUtil ;
+
+
+String param16 = &quot;/query/systime--{}&quot; ;
+
+log.info(&quot;AAAAAAAAAA&quot; + param16);
+
+String jiaMPm16 =  Base64DecodeUtil.encode(&quot;CD24A59FF0CC7F69707257E448C0DF1D&quot;,param16)  ;
+
+log.info(&quot;======加密后：&quot;+jiaMPm16) ;
+
+vars.put(&quot;jiaMParam16&quot;,jiaMPm16);</stringProp>
+          </BeanShellPreProcessor>
+          <hashTree/>
+          <BeanShellPostProcessor guiclass="TestBeanGUI" testclass="BeanShellPostProcessor" testname="BeanShell PostProcessor" enabled="true">
+            <boolProp name="resetInterpreter">false</boolProp>
+            <stringProp name="parameters"></stringProp>
+            <stringProp name="filename"></stringProp>
+            <stringProp name="script">import com.sinodata.decode.Base64DecodeUtil ;
+
+
+//获取返回的信息
+String strtemp16 = prev.getResponseDataAsString() ;
+log.info(&quot;------解密前：&quot; + strtemp16) ;
+
+
+//解密返回信息
+String jieMParam16 = Base64DecodeUtil.decode(strtemp16) ;
+log.info(&quot;------解密后：&quot;+jieMParam16) ;
+</stringProp>
+          </BeanShellPostProcessor>
+          <hashTree/>
+        </hashTree>
+        <TCPSampler guiclass="TCPSamplerGui" testclass="TCPSampler" testname="5.1.3.17.取近期期信息" enabled="false">
+          <stringProp name="TCPSampler.server">${IP}</stringProp>
+          <boolProp name="TCPSampler.reUseConnection">true</boolProp>
+          <stringProp name="TCPSampler.port">${Port}</stringProp>
+          <boolProp name="TCPSampler.nodelay">false</boolProp>
+          <stringProp name="TCPSampler.timeout"></stringProp>
+          <stringProp name="TCPSampler.request">${jiaMParam17}</stringProp>
+          <boolProp name="TCPSampler.closeConnection">false</boolProp>
+          <stringProp name="ConfigTestElement.username"></stringProp>
+          <stringProp name="ConfigTestElement.password"></stringProp>
+        </TCPSampler>
+        <hashTree>
+          <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="用户定义的变量" enabled="true">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="playType" elementType="Argument">
+                <stringProp name="Argument.name">playType</stringProp>
+                <stringProp name="Argument.value">B001</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+              <elementProp name="pageSize" elementType="Argument">
+                <stringProp name="Argument.name">pageSize</stringProp>
+                <stringProp name="Argument.value">10000</stringProp>
+                <stringProp name="Argument.desc">每页大小（整数，大于0小于20）</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+              <elementProp name="currentPage" elementType="Argument">
+                <stringProp name="Argument.name">currentPage</stringProp>
+                <stringProp name="Argument.value">1</stringProp>
+                <stringProp name="Argument.desc">当前页（整数，大于0，即查询第几页数据）</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </Arguments>
+          <hashTree/>
+          <BeanShellPreProcessor guiclass="TestBeanGUI" testclass="BeanShellPreProcessor" testname="BeanShell PreProcessor" enabled="true">
+            <boolProp name="resetInterpreter">false</boolProp>
+            <stringProp name="parameters"></stringProp>
+            <stringProp name="filename"></stringProp>
+            <stringProp name="script">import org.json.*;
+import com.sinodata.decode.Base64DecodeUtil ;
+
+
+//组装Json格式
+Map m17 = new HashMap();
+m17.put(&quot;pageSize&quot;,${pageSize});
+m17.put(&quot;currentPage&quot;,${currentPage});
+
+JSONObject ob17 = new JSONObject();
+String jsonstr17 = ob17.valueToString(m17);
+log.info(&quot;88888888组装的字符串：&quot; + jsonstr17);
+
+//组装需要加密的字符串
+String param17 = &quot;/${playType}/query/recentTermInfos--&quot; + jsonstr17 ;
+log.info(&quot;--------加密前：&quot; + param17);
+
+
+//加密字符串
+//String jiaMPm4 =  Base64DecodeUtil.encode(&quot;${logid}&quot;,param4)  ;
+String jiaMPm17 =  Base64DecodeUtil.encode(&quot;D70DF5BC525ADE82CD32AC9172C7C514&quot;,param17)  ;
+
+log.info(&quot;--------加密后：&quot; + jiaMPm17);
+
+
+//赋值给jiaMParam6
+vars.put(&quot;jiaMParam17&quot;,jiaMPm17);</stringProp>
+          </BeanShellPreProcessor>
+          <hashTree/>
+          <BeanShellPostProcessor guiclass="TestBeanGUI" testclass="BeanShellPostProcessor" testname="BeanShell PostProcessor" enabled="true">
+            <boolProp name="resetInterpreter">false</boolProp>
+            <stringProp name="parameters"></stringProp>
+            <stringProp name="filename"></stringProp>
+            <stringProp name="script">import com.sinodata.decode.Base64DecodeUtil ;
+
+
+//获取返回的信息
+String strtemp17 = prev.getResponseDataAsString() ;
+log.info(&quot;------解密前：&quot; + strtemp17) ;
+
+
+//解密返回信息
+String jieMParam17 = Base64DecodeUtil.decode(strtemp17) ;
+log.info(&quot;------解密后：&quot;+jieMParam17) ;
+</stringProp>
+          </BeanShellPostProcessor>
+          <hashTree/>
+        </hashTree>
+        <TCPSampler guiclass="TCPSamplerGui" testclass="TCPSampler" testname="5.1.3.18.终端注册接口" enabled="false">
+          <stringProp name="TCPSampler.server">${IP}</stringProp>
+          <boolProp name="TCPSampler.reUseConnection">true</boolProp>
+          <stringProp name="TCPSampler.port">${Port}</stringProp>
+          <boolProp name="TCPSampler.nodelay">false</boolProp>
+          <stringProp name="TCPSampler.timeout"></stringProp>
+          <stringProp name="TCPSampler.request">${jiaMParam18}</stringProp>
+          <boolProp name="TCPSampler.closeConnection">false</boolProp>
+          <stringProp name="ConfigTestElement.username"></stringProp>
+          <stringProp name="ConfigTestElement.password"></stringProp>
+        </TCPSampler>
+        <hashTree>
+          <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="用户定义的变量" enabled="true">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="terminalHdId" elementType="Argument">
+                <stringProp name="Argument.name">terminalHdId</stringProp>
+                <stringProp name="Argument.value">&quot;dfjiajfefj161f5w1f21f5123156fdsf88888&quot;</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+              <elementProp name="terminalMac" elementType="Argument">
+                <stringProp name="Argument.name">terminalMac</stringProp>
+                <stringProp name="Argument.value">&quot;feifjioefwfje6666&quot;</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+              <elementProp name="cpuInfo" elementType="Argument">
+                <stringProp name="Argument.name">cpuInfo</stringProp>
+                <stringProp name="Argument.value">&quot;djfkwef&quot;</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </Arguments>
+          <hashTree/>
+          <BeanShellPreProcessor guiclass="TestBeanGUI" testclass="BeanShellPreProcessor" testname="BeanShell PreProcessor" enabled="true">
+            <boolProp name="resetInterpreter">false</boolProp>
+            <stringProp name="parameters"></stringProp>
+            <stringProp name="filename"></stringProp>
+            <stringProp name="script">import org.json.*;
+import com.sinodata.decode.Base64DecodeUtil ;
+
+
+//组装Json格式
+Map m18 = new HashMap();
+m18.put(&quot;terminalHdId&quot;,${terminalHdId});
+m18.put(&quot;terminalMac&quot;,${terminalMac});
+m18.put(&quot;cpuInfo&quot;,${cpuInfo});
+
+JSONObject ob18 = new JSONObject();
+String jsonstr18 = ob18.valueToString(m18);
+log.info(&quot;777777777777777组装的字符串：&quot; + jsonstr18);
+
+//组装需要加密的字符串
+String param18 = &quot;/terminal/inforeg--&quot; + jsonstr18 ;
+log.info(&quot;--------加密前：&quot; + param18);
+
+
+//加密字符串
+//String jiaMPm4 =  Base64DecodeUtil.encode(&quot;${logid}&quot;,param4)  ;
+String jiaMPm18 =  Base64DecodeUtil.encode(&quot;D70DF5BC525ADE82CD32AC9172C7C514&quot;,param18)  ;
+
+log.info(&quot;--------加密后：&quot; + jiaMPm18);
+
+
+//赋值给jiaMParam6
+vars.put(&quot;jiaMParam18&quot;,jiaMPm18);</stringProp>
+          </BeanShellPreProcessor>
+          <hashTree/>
+          <BeanShellPostProcessor guiclass="TestBeanGUI" testclass="BeanShellPostProcessor" testname="BeanShell PostProcessor" enabled="true">
+            <boolProp name="resetInterpreter">false</boolProp>
+            <stringProp name="parameters"></stringProp>
+            <stringProp name="filename"></stringProp>
+            <stringProp name="script">import com.sinodata.decode.Base64DecodeUtil ;
+
+
+//获取返回的信息
+String strtemp18 = prev.getResponseDataAsString() ;
+log.info(&quot;------解密前：&quot; + strtemp18) ;
+
+
+//解密返回信息
+String jieMParam18 = Base64DecodeUtil.decode(strtemp18) ;
+log.info(&quot;------解密后：&quot;+jieMParam18) ;
+</stringProp>
+          </BeanShellPostProcessor>
+          <hashTree/>
+        </hashTree>
+        <TCPSampler guiclass="TCPSamplerGui" testclass="TCPSampler" testname="5.1.3.4.销售-test" enabled="false">
+          <stringProp name="TCPSampler.server">${IP}</stringProp>
+          <boolProp name="TCPSampler.reUseConnection">true</boolProp>
+          <stringProp name="TCPSampler.port">${Port}</stringProp>
+          <boolProp name="TCPSampler.nodelay">false</boolProp>
+          <stringProp name="TCPSampler.timeout"></stringProp>
+          <stringProp name="TCPSampler.request">${jiaMParam4}</stringProp>
+          <boolProp name="TCPSampler.closeConnection">false</boolProp>
+          <stringProp name="ConfigTestElement.username"></stringProp>
+          <stringProp name="ConfigTestElement.password"></stringProp>
+        </TCPSampler>
+        <hashTree>
+          <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="用户定义的变量" enabled="true">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="orderId" elementType="Argument">
+                <stringProp name="Argument.name">orderId</stringProp>
+                <stringProp name="Argument.value">${orderId}</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+                <stringProp name="Argument.desc">32位订单编号</stringProp>
+              </elementProp>
+              <elementProp name="termCount" elementType="Argument">
+                <stringProp name="Argument.name">termCount</stringProp>
+                <stringProp name="Argument.value">0</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+                <stringProp name="Argument.desc">0:当前期,大于1多期</stringProp>
+              </elementProp>
+              <elementProp name="sellDatetime" elementType="Argument">
+                <stringProp name="Argument.name">sellDatetime</stringProp>
+                <stringProp name="Argument.value">${sellDatetime}</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+                <stringProp name="Argument.desc">yyyy-MM-dd HH:mm:ss</stringProp>
+              </elementProp>
+              <elementProp name="cardId" elementType="Argument">
+                <stringProp name="Argument.name">cardId</stringProp>
+                <stringProp name="Argument.value">0</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+                <stringProp name="Argument.desc">备注字段</stringProp>
+              </elementProp>
+              <elementProp name="cardType" elementType="Argument">
+                <stringProp name="Argument.name">cardType</stringProp>
+                <stringProp name="Argument.value">0</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+                <stringProp name="Argument.desc">备注字段</stringProp>
+              </elementProp>
+              <elementProp name="moneyId" elementType="Argument">
+                <stringProp name="Argument.name">moneyId</stringProp>
+                <stringProp name="Argument.value">${moneyId}</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+                <stringProp name="Argument.desc">32位资金编号</stringProp>
+              </elementProp>
+            </collectionProp>
+          </Arguments>
+          <hashTree/>
+          <CSVDataSet guiclass="TestBeanGUI" testclass="CSVDataSet" testname="CSV Data Set Config" enabled="true">
+            <stringProp name="delimiter">,</stringProp>
+            <stringProp name="fileEncoding"></stringProp>
+            <stringProp name="filename">E:\Jmeter\SX\Net\3Dtest.txt</stringProp>
+            <boolProp name="ignoreFirstLine">false</boolProp>
+            <boolProp name="quotedData">false</boolProp>
+            <boolProp name="recycle">true</boolProp>
+            <stringProp name="shareMode">shareMode.all</stringProp>
+            <boolProp name="stopThread">false</boolProp>
+            <stringProp name="variableNames">playType,termCode,validTermCode,betType,betCount,betCodes,money</stringProp>
+          </CSVDataSet>
+          <hashTree/>
+          <BeanShellPreProcessor guiclass="TestBeanGUI" testclass="BeanShellPreProcessor" testname="BeanShell PreProcessor" enabled="true">
+            <boolProp name="resetInterpreter">false</boolProp>
+            <stringProp name="parameters"></stringProp>
+            <stringProp name="filename"></stringProp>
+            <stringProp name="script">import org.json.*;
+import com.sinodata.decode.Base64DecodeUtil ;
+
+//生成32位编号：年月日小时分秒 + 13位时间毫秒 + 随机生成5位数
+String str32 =  &quot;${__time(yyyyMMddHHmmss,)}&quot; + &quot;${__time(,)}&quot; + &quot;${__Random(10000,99999)}&quot;;
+log.info(&quot;随机生成的32位编号：&quot; + str32);
+
+//将生成的32位编号赋值给订单编号和资金编号
+orderId = str32 ;
+moneyId = str32 ;
+log.info(&quot;生成的32位订单编号DDDDDD：&quot; + orderId);
+log.info(&quot;生成的32位资金编号ZZZZZZ：&quot; + moneyId);
+
+//获取系统时间为销售时间
+sellDatetime = &quot;${__time(yyyy-MM-dd HH:mm:ss,)}&quot; ;
+log.info(&quot;XXXXXXXXXXXXXXXXXXXXXXXX&quot; + sellDatetime);
+
+
+//从CSV文件中获取参数值
+termCode=&quot;${termCode}&quot;;
+validTermCode=&quot;${validTermCode}&quot;;
+betType=${betType};
+betCount=${betCount};
+betCodes=&quot;${betCodes}&quot;;
+money=${money};
+
+
+
+//组装json格式
+Map m = new HashMap();
+m.put(&quot;orderId&quot;,orderId);
+//m.put(&quot;termCode&quot;,${termCode});
+m.put(&quot;termCode&quot;,termCode);
+m.put(&quot;termCount&quot;,${termCount});
+
+/*
+m.put(&quot;validTermCode&quot;,${validTermCode});
+m.put(&quot;betType&quot;,${betType});
+m.put(&quot;betCount&quot;,${betCount});
+m.put(&quot;betCodes&quot;,${betCodes});
+m.put(&quot;money&quot;,${money});
+*/
+
+m.put(&quot;validTermCode&quot;,validTermCode);
+m.put(&quot;betType&quot;,betType);
+m.put(&quot;betCount&quot;,betCount);
+m.put(&quot;betCodes&quot;,betCodes);
+m.put(&quot;money&quot;,money);
+
+
+m.put(&quot;sellDatetime&quot;,sellDatetime);
+m.put(&quot;cardId&quot;,${cardId});
+m.put(&quot;cardType&quot;,${cardType});
+m.put(&quot;moneyId&quot;,moneyId);
+
+JSONObject ob = new JSONObject();
+String jsonstr = ob.valueToString(m);
+log.info(&quot;BBBBBBBBBBBBBBBB&quot; + jsonstr);
+
+
+
+//组装需要加密的字符串
+String param4 = &quot;/${playType}/sell/post--&quot; + jsonstr ;
+log.info(&quot;--------加密前：&quot; + param4);
+
+
+//加密字符串
+//String jiaMPm4 =  Base64DecodeUtil.encode(&quot;${logid}&quot;,param4)  ;
+String jiaMPm4 =  Base64DecodeUtil.encode(&quot;D70DF5BC525ADE82CD32AC9172C7C514&quot;,param4)  ;
+
+log.info(&quot;======加密后：&quot;+jiaMPm4) ;
+
+vars.put(&quot;jiaMParam4&quot;,jiaMPm4);</stringProp>
+          </BeanShellPreProcessor>
+          <hashTree/>
+          <BeanShellPostProcessor guiclass="TestBeanGUI" testclass="BeanShellPostProcessor" testname="BeanShell PostProcessor" enabled="true">
+            <boolProp name="resetInterpreter">false</boolProp>
+            <stringProp name="parameters"></stringProp>
+            <stringProp name="filename"></stringProp>
+            <stringProp name="script">import com.sinodata.decode.Base64DecodeUtil ;
+
+
+//获取返回的信息
+String strtemp4 = prev.getResponseDataAsString() ;
+log.info(&quot;------解密前：&quot; + strtemp4) ;
+
+String jieMParam4 ;
+//解密返回信息
+jieMParam4 = Base64DecodeUtil.decode(strtemp4) ;
+log.info(&quot;------解密后：&quot;+jieMParam4) ;
+</stringProp>
+          </BeanShellPostProcessor>
+          <hashTree/>
+        </hashTree>
+        <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="察看结果树" enabled="true">
+          <boolProp name="ResultCollector.error_logging">false</boolProp>
+          <objProp>
+            <name>saveConfig</name>
+            <value class="SampleSaveConfiguration">
+              <time>true</time>
+              <latency>true</latency>
+              <timestamp>true</timestamp>
+              <success>true</success>
+              <label>true</label>
+              <code>true</code>
+              <message>true</message>
+              <threadName>true</threadName>
+              <dataType>true</dataType>
+              <encoding>false</encoding>
+              <assertions>true</assertions>
+              <subresults>true</subresults>
+              <responseData>false</responseData>
+              <samplerData>false</samplerData>
+              <xml>false</xml>
+              <fieldNames>true</fieldNames>
+              <responseHeaders>false</responseHeaders>
+              <requestHeaders>false</requestHeaders>
+              <responseDataOnError>false</responseDataOnError>
+              <saveAssertionResultsFailureMessage>true</saveAssertionResultsFailureMessage>
+              <assertionsResultsToSave>0</assertionsResultsToSave>
+              <bytes>true</bytes>
+              <sentBytes>true</sentBytes>
+              <threadCounts>true</threadCounts>
+              <idleTime>true</idleTime>
+              <connectTime>true</connectTime>
+            </value>
+          </objProp>
+          <stringProp name="filename"></stringProp>
+        </ResultCollector>
+        <hashTree/>
+      </hashTree>
+    </hashTree>
+    <WorkBench guiclass="WorkBenchGui" testclass="WorkBench" testname="工作台" enabled="true">
+      <boolProp name="WorkBench.save">true</boolProp>
+    </WorkBench>
+    <hashTree/>
+  </hashTree>
+</jmeterTestPlan>
