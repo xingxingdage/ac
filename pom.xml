@@ -10,23 +10,42 @@
   <name>ac</name>
   <url>http://maven.apache.org</url>
 
-   <properties>
+  <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <jmeter.result.jtl.dir>${project.build.directory}\jmeter\results</jmeter.result.jtl.dir>
     <jmeter.result.html.dir>${project.build.directory}\jmeter\html</jmeter.result.html.dir>
     <jmeter.result.html.dir1>${project.build.directory}\jmeter\html1</jmeter.result.html.dir1>
     <ReportName>TestReport</ReportName>
   </properties>
+  
   <dependencies>
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <version>3.8.1</version>
       <scope>test</scope>
-    </dependency> 
+    </dependency>
+    
+ 	
+    <dependency>
+    	<groupId>org.json</groupId>
+   	    <artifactId>json</artifactId>
+        <version>20171018</version>
+    </dependency>
+    
+    <dependency>
+    	<groupId>org.unityforJMeter</groupId>
+   	    <artifactId>unityforJMeter</artifactId>
+        <version>3.1</version>
+        <scope>system</scope>
+        <systemPath>${basedir}/lib/unityforJMeter.jar</systemPath>
+    </dependency>
+    
   </dependencies>
+  
   <build>
    <plugins>
+    
          <plugin>
                <groupId>com.lazerycode.jmeter</groupId>
                <artifactId>jmeter-maven-plugin</artifactId>
@@ -35,7 +54,8 @@
                     <resultsFileFormat>xml</resultsFileFormat>
                     <ignoreResultFailures>true</ignoreResultFailures>
                     <testResultsTimestamp>false</testResultsTimestamp>
-                </configuration>
+
+                 </configuration>
                <executions>
                    <execution>
                        <id>jmeter-tests</id>
@@ -47,7 +67,26 @@
                 </executions>
             </plugin>
             
-            <!-- 解决报告展开收缩的图标问题 -->
+     <plugin>  
+        <groupId>org.apache.maven.plugins</groupId>  
+        <artifactId>maven-dependency-plugin</artifactId>  
+        <version>2.8</version>  
+        <executions>  
+            <execution>  
+                <phase>package</phase>  
+                <goals>  
+                    <goal>copy-dependencies</goal>  
+                </goals>  
+            </execution>  
+        </executions>  
+         <configuration>  
+             <includeArtifactIds>json,unityforJMeter</includeArtifactIds>  
+             <outputDirectory>target/jmeter/lib/ext</outputDirectory>
+         </configuration>
+         
+    </plugin>  
+    
+                 
             <plugin>
                 <artifactId>maven-resources-plugin</artifactId>
                 <executions>
@@ -115,7 +154,7 @@
                    <artifactId>saxon</artifactId>
                    <version>8.7</version>
                    </dependency>
-               </dependencies>
+                </dependencies>
             </plugin>
     </plugins> 
  </build>     

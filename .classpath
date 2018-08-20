@@ -22,5 +22,20 @@
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="src/main/lib/commons-beanutils-1.8.0.jar"/>
+	<classpathentry kind="lib" path="src/main/lib/commons-collections-3.2.1.jar"/>
+	<classpathentry kind="lib" path="src/main/lib/commons-lang-2.4.jar"/>
+	<classpathentry kind="lib" path="src/main/lib/commons-logging-1.1.1.jar"/>
+	<classpathentry kind="lib" path="src/main/lib/ezmorph-1.0.6.jar"/>
+	<classpathentry kind="lib" path="src/main/lib/json-lib-2.3.jar"/>
+	<classpathentry kind="lib" path="src/main/lib/unityforJMeter-1.0.0.jar"/>
+	<classpathentry kind="lib" path="src/main/lib/json-20171018.jar"/>
+	<classpathentry kind="lib" path="src/main/lib/test01-1.0.1.jar"/>
+	<classpathentry kind="lib" path="src/main/lib/unityforJMeter.jar"/>
+	<classpathentry excluding="**" kind="src" output="target/test-classes" path="src/test/resources">
+		<attributes>
+			<attribute name="maven.pomderived" value="true"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
