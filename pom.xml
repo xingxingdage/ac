@@ -54,7 +54,6 @@
                     <resultsFileFormat>xml</resultsFileFormat>
                     <ignoreResultFailures>true</ignoreResultFailures>
                     <testResultsTimestamp>false</testResultsTimestamp>
-
                  </configuration>
                <executions>
                    <execution>
@@ -105,7 +104,7 @@
                                 </resource>
                             </resources>
                         </configuration>
-                    </execution>
+                    </execution>                        
                 </executions>
             </plugin>
             
@@ -125,7 +124,7 @@
                     <transformationSets>
                         <transformationSet>
                             <dir>${jmeter.result.jtl.dir}</dir>
-                            <stylesheet>src\test\resources\jmeter-results-detail-report_21.xsl</stylesheet>
+                            <stylesheet>src\test\resources\jmeter-results-shanhe-me.xsl</stylesheet>
                             <outputDir>${jmeter.result.html.dir}</outputDir>
                             <fileMappers>
                                 <fileMapper
@@ -134,9 +133,10 @@
                                 </fileMapper>
                             </fileMappers>
                         </transformationSet>
+
                         <transformationSet>
                             <dir>${jmeter.result.jtl.dir}</dir>
-                            <stylesheet>src\test\resources\jmeter-results-report_21.xsl</stylesheet>
+                            <stylesheet>src\test\resources\jmeter-results-detail-report_30.xsl</stylesheet>
                             <outputDir>${jmeter.result.html.dir1}</outputDir>
                             <fileMappers>
                                 <fileMapper
@@ -144,7 +144,8 @@
                                     <targetExtension>html</targetExtension>
                                 </fileMapper>
                             </fileMappers>
-                        </transformationSet>
+                        </transformationSet>                    
+                            
                     </transformationSets>
                 </configuration>
                 <!-- using XSLT 2.0 -->
